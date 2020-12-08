@@ -10,7 +10,7 @@
 
 ## Introduction
 
-### 本版本fork用于以nacos作为dashboard数据源！！！
+### ===============> 本版本fork用于以nacos作为dashboard数据源 <===============
 
 As distributed systems become increasingly popular, the reliability between services is becoming more important than ever before.
 Sentinel takes "flow" as breakthrough point, and works on multiple fields including **flow control**,
