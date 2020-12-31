@@ -1,11 +1,9 @@
 var app = angular.module('sentinelDashboardApp');
 
-app.controller('FlowControllerV2', ['$scope', '$stateParams', 'FlowServiceV2', 'ngDialog',
-  'MachineService',
-  function ($scope, $stateParams, FlowService, ngDialog,
-    MachineService) {
+app.controller('DegradeNacosCtl', ['$scope', '$stateParams', 'DegradeNacosService', 'ngDialog', 'MachineService',
+  function ($scope, $stateParams, DegradeNacosService, ngDialog, MachineService) {
+    //初始化
     $scope.app = $stateParams.app;
-
     $scope.rulesPageConfig = {
       pageSize: 10,
       currentPageIndex: 1,
@@ -26,27 +24,13 @@ app.controller('FlowControllerV2', ['$scope', '$stateParams', 'FlowServiceV2', '
         $scope.macInputModel = value;
       }
     };
-
-    $scope.generateThresholdTypeShow = (rule) => {
-      if (!rule.clusterMode) {
-        return '单机';
-      }
-      if (rule.clusterConfig.thresholdType === 0) {
-        return '集群均摊';
-      } else if (rule.clusterConfig.thresholdType === 1) {
-        return '集群总体';
-      } else {
-        return '集群';
-      }
-    };
-
     getMachineRules();
     function getMachineRules() {
       if (!$scope.macInputModel) {
         return;
       }
       var mac = $scope.macInputModel.split(':');
-      FlowService.queryMachineRules($scope.app, mac[0], mac[1]).success(
+      DegradeNacosService.queryMachineRules($scope.app, mac[0], mac[1]).success(
         function (data) {
           if (data.code == 0 && data.data) {
             $scope.rules = data.data;
@@ -59,17 +43,16 @@ app.controller('FlowControllerV2', ['$scope', '$stateParams', 'FlowServiceV2', '
     };
     $scope.getMachineRules = getMachineRules;
 
-    var flowRuleDialog;
+    var degradeRuleDialog;
     $scope.editRule = function (rule) {
       $scope.currentRule = angular.copy(rule);
-      $scope.flowRuleDialog = {
-        title: '编辑流控规则',
+      $scope.degradeRuleDialog = {
+        title: '编辑降级规则',
         type: 'edit',
-        confirmBtnText: '保存',
-        showAdvanceButton: rule.controlBehavior == 0 && rule.strategy == 0
+        confirmBtnText: '保存'
       };
-      flowRuleDialog = ngDialog.open({
-        template: '/app/views/dialog/flow-rule-dialog.html',
+      degradeRuleDialog = ngDialog.open({
+        template: '/app/views/dialog/degrade-rule-dialog.html',
         width: 680,
         overlay: true,
         scope: $scope
@@ -79,27 +62,21 @@ app.controller('FlowControllerV2', ['$scope', '$stateParams', 'FlowServiceV2', '
     $scope.addNewRule = function () {
       var mac = $scope.macInputModel.split(':');
       $scope.currentRule = {
-        grade: 1,
-        strategy: 0,
-        controlBehavior: 0,
+        grade: 0,
         app: $scope.app,
         ip: mac[0],
         port: mac[1],
         limitApp: 'default',
-        clusterMode: false,
-        clusterConfig: {
-          thresholdType: 0,
-          fallbackToLocalWhenFail: true
-        }
+        minRequestAmount: 5,
+        statIntervalMs: 1000,
       };
-      $scope.flowRuleDialog = {
-        title: '新增流控规则',
+      $scope.degradeRuleDialog = {
+        title: '新增降级规则',
         type: 'add',
-        confirmBtnText: '新增',
-        showAdvanceButton: true,
+        confirmBtnText: '新增'
       };
-      flowRuleDialog = ngDialog.open({
-        template: '/app/views/dialog/flow-rule-dialog.html',
+      degradeRuleDialog = ngDialog.open({
+        template: '/app/views/dialog/degrade-rule-dialog.html',
         width: 680,
         overlay: true,
         scope: $scope
@@ -107,25 +84,38 @@ app.controller('FlowControllerV2', ['$scope', '$stateParams', 'FlowServiceV2', '
     };
 
     $scope.saveRule = function () {
-      if (!FlowService.checkRuleValid($scope.currentRule)) {
+      if (!DegradeNacosService.checkRuleValid($scope.currentRule)) {
         return;
       }
-      if ($scope.flowRuleDialog.type === 'add') {
+      if ($scope.degradeRuleDialog.type === 'add') {
         addNewRule($scope.currentRule);
-      } else if ($scope.flowRuleDialog.type === 'edit') {
+      } else if ($scope.degradeRuleDialog.type === 'edit') {
         saveRule($scope.currentRule, true);
       }
     };
+
+    function parseDegradeMode(grade) {
+        switch (grade) {
+            case 0:
+              return '慢调用比例';
+            case 1:
+              return '异常比例';
+            case 2:
+              return '异常数';
+            default:
+              return '未知';
+        }
+    }
 
     var confirmDialog;
     $scope.deleteRule = function (rule) {
       $scope.currentRule = rule;
       $scope.confirmDialog = {
-        title: '删除流控规则',
+        title: '删除降级规则',
         type: 'delete_rule',
-        attentionTitle: '请确认是否删除如下流控规则',
-        attention: '资源名: ' + rule.resource + ', 流控应用: ' + rule.limitApp
-          + ', 阈值类型: ' + (rule.grade == 0 ? '线程数' : 'QPS') + ', 阈值: ' + rule.count,
+        attentionTitle: '请确认是否删除如下降级规则',
+        attention: '资源名: ' + rule.resource +
+            ', 降级模式: ' + parseDegradeMode(rule.grade) + ', 阈值: ' + rule.count,
         confirmBtnText: '删除',
       };
       confirmDialog = ngDialog.open({
@@ -136,7 +126,7 @@ app.controller('FlowControllerV2', ['$scope', '$stateParams', 'FlowServiceV2', '
     };
 
     $scope.confirm = function () {
-      if ($scope.confirmDialog.type === 'delete_rule') {
+      if ($scope.confirmDialog.type == 'delete_rule') {
         deleteRule($scope.currentRule);
       } else {
         console.error('error');
@@ -144,45 +134,38 @@ app.controller('FlowControllerV2', ['$scope', '$stateParams', 'FlowServiceV2', '
     };
 
     function deleteRule(rule) {
-      FlowService.deleteRule(rule).success(function (data) {
+      DegradeNacosService.deleteRule(rule).success(function (data) {
         if (data.code == 0) {
           getMachineRules();
           confirmDialog.close();
         } else {
-          alert('失败!');
+          alert('失败：' + data.msg);
         }
       });
     };
 
     function addNewRule(rule) {
-      FlowService.newRule(rule).success(function (data) {
+      DegradeNacosService.newRule(rule).success(function (data) {
         if (data.code == 0) {
           getMachineRules();
-          flowRuleDialog.close();
+          degradeRuleDialog.close();
         } else {
-          alert('失败!');
+          alert('失败：' + data.msg);
         }
       });
     };
 
-    $scope.onOpenAdvanceClick = function () {
-      $scope.flowRuleDialog.showAdvanceButton = false;
-    };
-    $scope.onCloseAdvanceClick = function () {
-      $scope.flowRuleDialog.showAdvanceButton = true;
-    };
-
     function saveRule(rule, edit) {
-      FlowService.saveRule(rule).success(function (data) {
+      DegradeNacosService.saveRule(rule).success(function (data) {
         if (data.code == 0) {
           getMachineRules();
           if (edit) {
-            flowRuleDialog.close();
+            degradeRuleDialog.close();
           } else {
             confirmDialog.close();
           }
         } else {
-          alert('失败!');
+          alert('失败：' + data.msg);
         }
       });
     }

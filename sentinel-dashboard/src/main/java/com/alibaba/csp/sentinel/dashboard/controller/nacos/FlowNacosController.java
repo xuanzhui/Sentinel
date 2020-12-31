@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.alibaba.csp.sentinel.dashboard.controller.v2;
+package com.alibaba.csp.sentinel.dashboard.controller.nacos;
 
 import java.util.Date;
 import java.util.List;
@@ -29,6 +29,7 @@ import com.alibaba.csp.sentinel.dashboard.rule.DynamicRuleProvider;
 import com.alibaba.csp.sentinel.dashboard.rule.DynamicRulePublisher;
 import com.alibaba.csp.sentinel.dashboard.domain.Result;
 
+import com.alibaba.fastjson.JSON;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -44,31 +45,31 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 /**
- * Flow rule controller (v2).
+ * for flow rules
  *
- * @author Eric Zhao
- * @since 1.4.0
+ * @author xuanzhui
  */
 @RestController
-@RequestMapping(value = "/v2/flow")
-public class FlowControllerV2 {
+@RequestMapping(value = "/nacos/flow")
+public class FlowNacosController {
 
-    private final Logger logger = LoggerFactory.getLogger(FlowControllerV2.class);
+    private final Logger logger = LoggerFactory.getLogger(FlowNacosController.class);
 
+    // 每次刷新列表，内存中的列表都会被刷新，即使有不同的应用，同一个时间其实只有一个应用的数据
     @Autowired
     private InMemoryRuleRepositoryAdapter<FlowRuleEntity> repository;
 
     @Autowired
-    @Qualifier("flowRuleDefaultProvider")
+    @Qualifier("flowRuleNacosProvider")
     private DynamicRuleProvider<List<FlowRuleEntity>> ruleProvider;
     @Autowired
-    @Qualifier("flowRuleDefaultPublisher")
+    @Qualifier("flowRuleNacosPublisher")
     private DynamicRulePublisher<List<FlowRuleEntity>> rulePublisher;
 
     @GetMapping("/rules")
     @AuthAction(PrivilegeType.READ_RULE)
     public Result<List<FlowRuleEntity>> apiQueryMachineRules(@RequestParam String app) {
-
+        logger.info("query app {} flow rules", app);
         if (StringUtil.isEmpty(app)) {
             return Result.ofFail(-1, "app can't be null or empty");
         }
@@ -137,7 +138,7 @@ public class FlowControllerV2 {
     @PostMapping("/rule")
     @AuthAction(value = AuthService.PrivilegeType.WRITE_RULE)
     public Result<FlowRuleEntity> apiAddFlowRule(@RequestBody FlowRuleEntity entity) {
-
+        logger.info("adding new flow rule: {}", JSON.toJSONString(entity));
         Result<FlowRuleEntity> checkResult = checkEntityInternal(entity);
         if (checkResult != null) {
             return checkResult;
@@ -163,6 +164,7 @@ public class FlowControllerV2 {
 
     public Result<FlowRuleEntity> apiUpdateFlowRule(@PathVariable("id") Long id,
                                                     @RequestBody FlowRuleEntity entity) {
+        logger.info("updating flow rule, id {}, new rule {}", id, entity);
         if (id == null || id <= 0) {
             return Result.ofFail(-1, "Invalid id");
         }
@@ -202,6 +204,7 @@ public class FlowControllerV2 {
     @DeleteMapping("/rule/{id}")
     @AuthAction(PrivilegeType.DELETE_RULE)
     public Result<Long> apiDeleteRule(@PathVariable("id") Long id) {
+        logger.info("removing flow rule, id {}", id);
         if (id == null || id <= 0) {
             return Result.ofFail(-1, "Invalid id");
         }

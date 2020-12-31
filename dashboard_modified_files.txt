@@ -1,0 +1,41 @@
+Changes to be committed:
+	renamed:    sentinel-dashboard/src/main/java/com/alibaba/csp/sentinel/dashboard/controller/v2/FlowControllerV2.java -> sentinel-dashboard/src/main/java/com/alibaba/csp/sentinel/dashboard/controller/nacos/FlowNacosController.java
+	renamed:    sentinel-dashboard/src/main/webapp/resources/app/scripts/controllers/flow_v2.js -> sentinel-dashboard/src/main/webapp/resources/app/scripts/controllers/nacos/flow_nacos.js
+	renamed:    sentinel-dashboard/src/main/webapp/resources/app/scripts/services/flow_service_v2.js -> sentinel-dashboard/src/main/webapp/resources/app/scripts/services/nacos/flow_nacos_service.js
+	renamed:    sentinel-dashboard/src/main/webapp/resources/app/views/flow_v2.html -> sentinel-dashboard/src/main/webapp/resources/app/views/nacos/flow_nacos.html
+
+
+	modified:   sentinel-dashboard/pom.xml
+	modified:   sentinel-dashboard/src/main/java/com/alibaba/csp/sentinel/dashboard/controller/nacos/FlowNacosController.java
+	modified:   sentinel-dashboard/src/main/java/com/alibaba/csp/sentinel/dashboard/repository/rule/InMemAuthorityRuleStore.java
+	modified:   sentinel-dashboard/src/main/java/com/alibaba/csp/sentinel/dashboard/repository/rule/InMemDegradeRuleStore.java
+	modified:   sentinel-dashboard/src/main/java/com/alibaba/csp/sentinel/dashboard/repository/rule/InMemFlowRuleStore.java
+	modified:   sentinel-dashboard/src/main/java/com/alibaba/csp/sentinel/dashboard/repository/rule/InMemParamFlowRuleStore.java
+	modified:   sentinel-dashboard/src/main/java/com/alibaba/csp/sentinel/dashboard/repository/rule/InMemSystemRuleStore.java
+	modified:   sentinel-dashboard/src/main/resources/application.properties
+	modified:   sentinel-dashboard/src/main/webapp/resources/app/scripts/app.js
+	modified:   sentinel-dashboard/src/main/webapp/resources/app/scripts/directives/sidebar/sidebar.html
+	modified:   sentinel-dashboard/src/main/webapp/resources/app/views/nacos/flow_nacos.html
+	modified:   sentinel-dashboard/src/main/webapp/resources/dist/js/app.js
+	modified:   sentinel-dashboard/src/main/webapp/resources/gulpfile.js
+	modified:   sentinel-dashboard/src/main/webapp/resources/package-lock.json
+	modified:   sentinel-dashboard/src/main/webapp/resources/package.json
+
+
+	sentinel-dashboard/src/main/java/com/alibaba/csp/sentinel/dashboard/controller/nacos/AuthorityRuleNacosController.java
+	sentinel-dashboard/src/main/java/com/alibaba/csp/sentinel/dashboard/controller/nacos/DegradeNacosController.java
+	sentinel-dashboard/src/main/java/com/alibaba/csp/sentinel/dashboard/controller/nacos/ParamFlowNacosController.java
+	sentinel-dashboard/src/main/java/com/alibaba/csp/sentinel/dashboard/controller/nacos/SystemNacosController.java
+	sentinel-dashboard/src/main/java/com/alibaba/csp/sentinel/dashboard/rule/nacos/
+	sentinel-dashboard/src/main/webapp/resources/app/scripts/controllers/nacos/authority_nacos.js
+	sentinel-dashboard/src/main/webapp/resources/app/scripts/controllers/nacos/degrade_nacos.js
+	sentinel-dashboard/src/main/webapp/resources/app/scripts/controllers/nacos/param_flow_nacos.js
+	sentinel-dashboard/src/main/webapp/resources/app/scripts/controllers/nacos/system_nacos.js
+	sentinel-dashboard/src/main/webapp/resources/app/scripts/services/nacos/authority_nacos_service.js
+	sentinel-dashboard/src/main/webapp/resources/app/scripts/services/nacos/degrade_nacos_service.js
+	sentinel-dashboard/src/main/webapp/resources/app/scripts/services/nacos/param_flow_nacos_service.js
+	sentinel-dashboard/src/main/webapp/resources/app/scripts/services/nacos/system_nacos_service.js
+	sentinel-dashboard/src/main/webapp/resources/app/views/nacos/authority_nacos.html
+	sentinel-dashboard/src/main/webapp/resources/app/views/nacos/degrade_nacos.html
+	sentinel-dashboard/src/main/webapp/resources/app/views/nacos/param_flow_nacos.html
+	sentinel-dashboard/src/main/webapp/resources/app/views/nacos/system_nacos.html

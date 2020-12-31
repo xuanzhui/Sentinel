@@ -47,7 +47,6 @@ const JS_APP = [
   'app/scripts/services/auth_service.js',
   'app/scripts/services/appservice.js',
   'app/scripts/services/flow_service_v1.js',
-  'app/scripts/services/flow_service_v2.js',
   'app/scripts/services/degrade_service.js',
   'app/scripts/services/systemservice.js',
   'app/scripts/services/machineservice.js',
@@ -58,6 +57,11 @@ const JS_APP = [
   'app/scripts/services/cluster_state_service.js',
   'app/scripts/services/gateway/api_service.js',
   'app/scripts/services/gateway/flow_service.js',
+  'app/scripts/services/nacos/flow_nacos_service.js',
+  'app/scripts/services/nacos/degrade_nacos_service.js',
+  'app/scripts/services/nacos/param_flow_nacos_service.js',
+  'app/scripts/services/nacos/system_nacos_service.js',
+  'app/scripts/services/nacos/authority_nacos_service.js',
 ];
 
 gulp.task('lib', function () {
@@ -123,7 +127,7 @@ gulp.task('serve', ['build'], function () {
   });
   // 打开浏览器
   setTimeout(() => {
-    open('http://localhost:8080/index_dev.htm')
+    open('http://localhost:9100/index_dev.htm')
   }, 200);
   // 监听
   gulp.watch(app.srcPath + '**/*.js', ['js']);

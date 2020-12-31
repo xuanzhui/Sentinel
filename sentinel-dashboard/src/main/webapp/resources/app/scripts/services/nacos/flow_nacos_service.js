@@ -1,6 +1,6 @@
 var app = angular.module('sentinelDashboardApp');
 
-app.service('FlowServiceV2', ['$http', function ($http) {
+app.service('FlowNacosService', ['$http', function ($http) {
     this.queryMachineRules = function (app, ip, port) {
         var param = {
             app: app,
@@ -8,7 +8,7 @@ app.service('FlowServiceV2', ['$http', function ($http) {
             port: port
         };
         return $http({
-            url: '/v2/flow/rules',
+            url: '/nacos/flow/rules',
             params: param,
             method: 'GET'
         });
@@ -16,7 +16,7 @@ app.service('FlowServiceV2', ['$http', function ($http) {
 
     this.newRule = function (rule) {
         return $http({
-            url: '/v2/flow/rule',
+            url: '/nacos/flow/rule',
             data: rule,
             method: 'POST'
         });
@@ -24,7 +24,7 @@ app.service('FlowServiceV2', ['$http', function ($http) {
 
     this.saveRule = function (rule) {
         return $http({
-            url: '/v2/flow/rule/' + rule.id,
+            url: '/nacos/flow/rule/' + rule.id,
             data: rule,
             method: 'PUT'
         });
@@ -32,7 +32,7 @@ app.service('FlowServiceV2', ['$http', function ($http) {
 
     this.deleteRule = function (rule) {
         return $http({
-            url: '/v2/flow/rule/' + rule.id,
+            url: '/nacos/flow/rule/' + rule.id,
             method: 'DELETE'
         });
     };
